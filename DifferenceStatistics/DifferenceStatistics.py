@@ -134,6 +134,8 @@ class DifferenceStatisticsLogic(ScriptedLoadableModuleLogic):
     covariate_names = covs.columns.tolist()
     names = []
 
+    logging.info('Computing pairwise differences')
+
     for index, (tp1, tp2) in enumerate(zip(tp1_subjects, tp2_subjects)):
       try:
         # Load models
@@ -179,30 +181,14 @@ class DifferenceStatisticsLogic(ScriptedLoadableModuleLogic):
 
     # Run difference files through MFSDA
 
-    mfsda_params = {}
-    mfsda_params["shapeData"] = str(out_csv_fullpath)
-    mfsda_params["coordData"] = str(template)
-    mfsda_params["outputDir"] = str(output)
+    logging.info('Computing statistics')
 
-    mfsda_module = slicer.modules.mfsda_run
-    slicer.cli.runSync(mfsda_module, None, parameters=mfsda_params)
+    slicer.util.selectModule(slicer.modules.mfsda)
+    slicer.util.selectModule(slicer.modules.differencestatistics)
     
-    # Create output visualization
-
-    mfsda_shape_params = {}
-    mfsda_shape_params["shape"] = str(template)
-    mfsda_shape_params["pvalues"] = str(output / 'pvalues.json')
-    mfsda_shape_params["efit"] = str(output / 'efit.json')
-    mfsda_shape_params["covariates"] = covariate_names
-    mfsda_shape_params["output"] = str(output / 'out.vtk')
-
-    print(mfsda_shape_params)
-
-    mfsda_shape_module = slicer.modules.mfsda_createshapes
-    slicer.cli.runSync(mfsda_shape_module, None, mfsda_shape_params)
-
-    slicer.modules.shapepopulationviewer.widgetRepresentation().loadCSVFile(output / 'output.csv')
-    slicer.util.selectModule(slicer.modules.shapepopulationviewer)
+    slicer.modules.MFSDAWidget.lineEdit_pshape.setCurrentPath(str(template))
+    slicer.modules.MFSDAWidget.lineEdit_output.directory = str(output)
+    slicer.modules.MFSDAWidget.lineEdit_csv.setCurrentPath(str(out_csv_fullpath))
 
     logging.info('Processing completed')
 

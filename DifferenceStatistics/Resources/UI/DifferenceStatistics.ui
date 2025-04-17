@@ -32,7 +32,7 @@
               </widget>
             </item>
             <item row="1" column="1">
-              <widget class="ctkDirectoryButton" name="TemplateMesh">
+              <widget class="ctkPathLineEdit" name="TemplateMesh">
                 <property name="toolTip">
                   <string>Template Mesh</string>
                 </property>
