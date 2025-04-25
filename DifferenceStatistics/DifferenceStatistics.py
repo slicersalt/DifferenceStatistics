@@ -171,6 +171,10 @@ class DifferenceStatisticsLogic(ScriptedLoadableModuleLogic):
         output_model_fullpath = (output / f"{out_name}.vtk")
         slicer.util.saveNode(output_node, str(output_model_fullpath))
         names.append(str(output_model_fullpath))
+
+        slicer.mrmlScene.RemoveNode(model1)
+        slicer.mrmlScene.RemoveNode(model2)
+        slicer.mrmlScene.RemoveNode(output_node)
       except Exception as e:
         print(f"An error occurred with subject {index}: {e}")
         return
@@ -184,7 +188,6 @@ class DifferenceStatisticsLogic(ScriptedLoadableModuleLogic):
     logging.info('Computing statistics')
 
     slicer.util.selectModule(slicer.modules.mfsda)
-    slicer.util.selectModule(slicer.modules.differencestatistics)
     
     slicer.modules.MFSDAWidget.lineEdit_pshape.setCurrentPath(str(template))
     slicer.modules.MFSDAWidget.lineEdit_output.directory = str(output)
